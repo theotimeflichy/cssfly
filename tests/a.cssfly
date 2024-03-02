@@ -1,0 +1,12 @@
+$rouge = #CF4436;
+$bleu = #bleu;
+$rouge = rroouugge
+$vert = lol
+
+body {color:blue;
+    background-color:$vert;border:10px solid green;
+    $rouge = non;
+}
+$vert = lol2
+
+p {color:$vert;}
