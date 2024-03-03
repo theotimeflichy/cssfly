@@ -8,8 +8,12 @@ body {color:blue;
     $rouge = non;
     color:$rouge;
 
-    p{
+    p {
         padding:10px;
+
+        a {
+            color:yellow;
+        }
     }
 }
 $vert = lol2;

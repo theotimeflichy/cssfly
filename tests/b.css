@@ -1,1 +1,19 @@
-{"type":"root","var":[{"type":"rule","name":"rouge","value":"rroouugge"},{"type":"rule","name":"bleu","value":"#bleu"},{"type":"rule","name":"vert","value":"lol2"}],"child":[{"type":"block","selector":"body","var":[{"type":"rule","name":"rouge","value":"non"}],"rules":[{"property":"color","value":"blue"},{"property":"background-color","value":"lol"},{"property":"border","value":"10px solid green"},{"property":"color","value":"non"}],"child":[{"type":"block","selector":"p","var":[],"rules":[{"property":"padding","value":"10px"}],"child":[]}]},{"type":"block","selector":"p","var":[{"type":"rule","name":"vert","value":"lol3"}],"rules":[{"property":"color","value":"lol3"}],"child":[]}]}
+body {
+	color: blue;
+	background-color: lol;
+	border: 10px solid green;
+	color: non;
+}
+
+body p {
+	padding: 10px;
+}
+
+body p a {
+	color: yellow;
+}
+
+p {
+	color: lol3;
+}
+

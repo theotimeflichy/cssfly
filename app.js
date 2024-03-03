@@ -15,7 +15,7 @@ console.log(b)
 // On passe de l'arbre à l'output
 
 // On écrit l'output
-io.writeFileContent(args[1], JSON.stringify(b));
+io.writeFileContent(args[1], a.astToCSS());
 
 
 

@@ -30,11 +30,11 @@ class AST {
         } else if (line.includes("{")) {
             this.inBlock.push({ type: "block", selector: line.replace(/{/, '').trim(), var: [], rules: [], child: [] });
         } else if (line.includes("}")) {
-            this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);//this.inblock
+            this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
             this.inBlock.pop();
         } else if (line.includes(":")) {
             this.addRule(line);
-        } else if (new RegExp('^@import\([\"\'].*[\"\']\);?$').test(line)) {
+        } else if (new RegExp('^@import\([\"\'].*(.css|.cssfly)[\"\']\);?$').test(line)) {
 
         }
 
@@ -69,7 +69,7 @@ class AST {
         if (this.inBlock[this.inBlock.length-1].rules.some(e => e.name === line[0])){
             this.inBlock[this.inBlock.length-1].rules.forEach(e => { if (e.property === line[0]) e.value = line[1]; });
         } else {
-            this.inBlock[this.inBlock.length-1].rules.push({ property: line[0], value: line[1] });
+            this.inBlock[this.inBlock.length-1].rules.push({ type: "rule", property: line[0], value: line[1] });
         }
     }
 
@@ -83,7 +83,7 @@ class AST {
         if (this.inBlock[this.inBlock.length - 1].var.some(e => e.name === line[0])){
             this.inBlock[this.inBlock.length - 1].var.forEach(e => { if (e.name === line[0]) e.value = line[1]; });
         } else {
-            this.inBlock[this.inBlock.length - 1].var.push({ type: "rule", name: line[0], value: line[1] });
+            this.inBlock[this.inBlock.length - 1].var.push({ type: "var", name: line[0], value: line[1] });
         }
     }
 
@@ -99,8 +99,64 @@ class AST {
         return data;
     }
 
-    toCSS() {
+    generateClassName(block, className) {
+        let name = className.trim();
+        if (name.endsWith(",")) name = name.slice(0, -1);
+        name += " {\n";
+        return name;
+    }
+
+    createBlock(block, className) {
+        let css = "";
+
+        console.log("-" + className)
+        css += this.generateClassName(block, className);
+
+        block.rules.forEach(r => {
+            css += "\t" + r.property + ": " + r.value + ";\n";
+        });
+
+        css += "}\n\n";
+
+        return css;
+    }
+
+    toCSS (block, className) {
+
+        let css = this.createBlock(block, className);
+
+        block.child.forEach(child => { 
+
+            let name = "";
+
+            if (className.includes(",") || child.selector.includes(",")) {
+
+                className.split(",").forEach(cN => {
+                    child.selector.split(",").forEach(cS => {
+                        name += cN + " " + cS + ", ";
+                    })
+                });
+
+            } else {
+                name = className + " " + child.selector;
+            }
+
         
+
+            css += this.toCSS(child, name);
+        });
+
+        return css;
+    }
+
+    astToCSS() {
+        let css = "";
+
+        this.ast.child.forEach(e => { 
+            css += this.toCSS(e, e.selector);
+        });
+
+        return css;
     }
 
 }
