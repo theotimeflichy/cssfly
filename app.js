@@ -7,22 +7,8 @@ if (args.length != 2 || !(new RegExp('.*\.cssfly$').test(args[0])) || !(new RegE
         throw new Error("Invalid arguments. Use : cssfly <input.cssfly> <output.css>")
 
 data = io.readFileContent(args[0]);
-
-const a = new AST(data);
-const b = a.parse();
-console.log(b)
-
-// On passe de l'arbre à l'output
-
-// On écrit l'output
+const a = new AST(data, args[0]);
+a.parse();
 io.writeFileContent(args[1], a.astToCSS());
 
 
-
-
-/**
- * 1. On récupère les argument et renvoie une erreur en cas de non conformité
- * 2. On ouvre le fichier et récupère le contenue
- * 3. On fait abs, parse et créer l'output
- * 4. On écrit l'output.
- */
