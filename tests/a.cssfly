@@ -1,12 +1,17 @@
 $rouge = #CF4436;
 $bleu = #bleu;
-$rouge = rroouugge
-$vert = lol
+$rouge = rroouugge;
+$vert = lol;
 
 body {color:blue;
     background-color:$vert;border:10px solid green;
     $rouge = non;
-}
-$vert = lol2
+    color:$rouge;
 
-p {color:$vert;}
+    p{
+        padding:10px;
+    }
+}
+$vert = lol2;
+
+p {$vert=lol3;color:$vert;}

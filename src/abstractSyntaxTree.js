@@ -2,7 +2,7 @@ class AST {
 
     constructor(content) {
         this.content = content;
-        this.ast = { type: 'root', var: [], rules: [] };
+        this.ast = { type: 'root', var: [], child: [] };
         this.inBlock = [];
     }
 
@@ -28,14 +28,14 @@ class AST {
         if (line.startsWith("$") && line.includes("=")) {
             this.addVariable(line);
         } else if (line.includes("{")) {
-            this.block = { selector: "", var: [], rules: [] }
-            this.block.selector = line.replace(/{/, '').trim();
-            this.inBlock.push(this.block);
+            this.inBlock.push({ type: "block", selector: line.replace(/{/, '').trim(), var: [], rules: [], child: [] });
         } else if (line.includes("}")) {
+            this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);//this.inblock
             this.inBlock.pop();
-            this.ast.rules.push(this.block);
         } else if (line.includes(":")) {
             this.addRule(line);
+        } else if (new RegExp('^@import\([\"\'].*[\"\']\);?$').test(line)) {
+
         }
 
     }
@@ -48,23 +48,28 @@ class AST {
         line = line.split(":", 2).map(l => l.trim());
         line[1] = line[1].replace(/;$/, '');
 
+        // La value est elle un variable ? (local, global ?)
         if (new RegExp(/^\$.*/).test(line[1])) {
-
-            // vérifier si variable local avant ?
-
-            if (this.ast.var.some(e => e.name == line[1].replace(/\$/, ''))) {
-                this.ast.var.map(o => {
-                    if (o.name == line[1].replace(/\$/, '')) {
-                        line[1] = o.value;
+            let brk = true;
+            for (let i = this.inBlock.length; i >= 0 && brk; i--) {
+                if (this.inBlock[i]) {
+                    if (this.inBlock[i].var.some(e => e.name == line[1].replace(/\$/, ''))) {
+                        this.inBlock[i].var.map(o => {
+                            if (o.name == line[1].replace(/\$/, '')) {
+                                line[1] = o.value;
+                                brk=false;
+                            }
+                        });
                     }
-                });
+                }
             }
         }
 
-        if (this.block.rules.some(e => e.name === line[0])){
-            this.block.rules.forEach(e => { if (e.property === line[0]) e.value = line[1]; });
+        // La regle existe t-elle déjà ? (add ou edit)
+        if (this.inBlock[this.inBlock.length-1].rules.some(e => e.name === line[0])){
+            this.inBlock[this.inBlock.length-1].rules.forEach(e => { if (e.property === line[0]) e.value = line[1]; });
         } else {
-            this.block.rules.push({ property: line[0], value: line[1] });
+            this.inBlock[this.inBlock.length-1].rules.push({ property: line[0], value: line[1] });
         }
     }
 
@@ -78,7 +83,7 @@ class AST {
         if (this.inBlock[this.inBlock.length - 1].var.some(e => e.name === line[0])){
             this.inBlock[this.inBlock.length - 1].var.forEach(e => { if (e.name === line[0]) e.value = line[1]; });
         } else {
-            this.inBlock[this.inBlock.length - 1].var.push({ name: line[0], value: line[1] });
+            this.inBlock[this.inBlock.length - 1].var.push({ type: "rule", name: line[0], value: line[1] });
         }
     }
 
