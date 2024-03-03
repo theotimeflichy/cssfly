@@ -13,8 +13,8 @@ class AST {
      */
     parse() {
         this.inBlock.push(this.ast);
-
         var data = this.strToArray(this.content);
+        //importFile(data);
         for (let line of data) this.analysis(line);
         return this.ast;
     }
@@ -34,8 +34,6 @@ class AST {
             this.inBlock.pop();
         } else if (line.includes(":")) {
             this.addRule(line);
-        } else if (new RegExp('^@import\([\"\'].*(.css|.cssfly)[\"\']\);?$').test(line)) {
-
         }
 
     }
@@ -87,13 +85,22 @@ class AST {
         }
     }
 
+    // new RegExp('^@import\([\"\'].*(.css|.cssfly)[\"\']\);?$').test(line)
+
     /**
      * Permet de nettoyer le fichier css et de le passer en tableau.
      * @param {*} data le fichier css en string
      * @returns le tableau
      */
     strToArray(data) {
-        data = data.replace(/;/g, ";\n").replace(/}/g, "}\n").replace(/{/g, "{\n");
+
+        data = data
+            .replace(/;/g, ";\n")
+            .replace(/}/g, "}\n")
+            .replace(/{/g, "{\n")
+            .replace(/\s*,\s*/g, ', ')
+            .replace(/,\s*\n\s*/g, ', ');
+
         data = data.split("\n");
         data = data.map(l => l.trim()).filter(l => l !== '');
         return data;
