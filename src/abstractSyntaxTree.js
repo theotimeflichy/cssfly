@@ -99,6 +99,12 @@ class AST {
         return data;
     }
 
+    /**
+     * Genere le nom des classes.
+     * @param {*} block 
+     * @param {*} className 
+     * @returns 
+     */
     generateClassName(block, className) {
         let name = className.trim();
         if (name.endsWith(",")) name = name.slice(0, -1);
@@ -106,11 +112,14 @@ class AST {
         return name;
     }
 
+    /**
+     * Créer les blocs (ex: body { })
+     * @param {*} block 
+     * @param {*} className 
+     * @returns 
+     */
     createBlock(block, className) {
-        let css = "";
-
-        console.log("-" + className)
-        css += this.generateClassName(block, className);
+        let css = this.generateClassName(block, className);
 
         block.rules.forEach(r => {
             css += "\t" + r.property + ": " + r.value + ";\n";
@@ -121,6 +130,12 @@ class AST {
         return css;
     }
 
+    /**
+     * Prend une banche de l'arbre et la passe en css.
+     * @param {*} block 
+     * @param {*} className 
+     * @returns 
+     */
     toCSS (block, className) {
 
         let css = this.createBlock(block, className);
@@ -138,7 +153,7 @@ class AST {
                 });
 
             } else {
-                name = className + " " + child.selector;
+                name = className + ((child.selector.trim().startsWith(":")) ? "" : " ") + child.selector;
             }
 
         

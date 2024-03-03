@@ -1,5 +1,9 @@
 body {
 
+    :hover {
+
+    }
+
     a {
 
         b {
@@ -16,7 +20,7 @@ body {
 
 h1, h2 {
     a, span {
-        
+
     }
 }
 
