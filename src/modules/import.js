@@ -11,7 +11,6 @@ async function importFile(data, path) {
     data = data.replace(regex, (match, a1) => { tableau.push(a1); return a1; });
 
     for (let i = 0; i < tableau.length; i++) {
-        console.log(tableau[i]);
         if (tableau[i].startsWith("http")) {
             toReplace = await importExternalFile(tableau[i]);
         } else {
