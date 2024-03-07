@@ -1,5 +1,6 @@
 const ASTImport = require('./modules/import');
 const ASTVar = require('./modules/variable');
+const ASTCondition = require('./modules/condition');
 
 class AST {
 
@@ -8,6 +9,7 @@ class AST {
         this.path = path;
         this.ast = { type: 'root', var: [], child: [] };
         this.inBlock = [];
+        this.locker = 1; // 1 = open, 2 = close but was open, 3 close but never open
     }
 
 
@@ -30,14 +32,16 @@ class AST {
      */
     analysis(line) {
 
-        if (line.startsWith("$") && line.includes("=")) {
+        if ((new RegExp("@(if|else|endif)")).test(line)) {
+            this.locker = ASTCondition.verify(line, this.inBlock, this.locker);
+        } else if (this.locker == 1 && line.startsWith("$") && line.includes("=")) {
             this.addVariable(line);
-        } else if (line.includes("{")) {
+        } else if (this.locker == 1 && line.includes("{")) {
             this.inBlock.push({ type: "block", selector: line.replace(/{/, '').trim(), var: [], rules: [], child: [] });
-        } else if (line.includes("}")) {
+        } else if (this.locker == 1 && line.includes("}")) {
             this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
             this.inBlock.pop();
-        } else if (line.includes(":")) {
+        } else if (this.locker == 1 && line.includes(":")) {
             this.addRule(line);
         }
 
@@ -101,6 +105,10 @@ class AST {
         data = data.map(l => l.trim()).filter(l => l !== '');
         return data;
     }
+
+    //
+    //  FUNCTIONS AST -> CSS
+    //
 
     /**
      * Genere le nom des classes.
@@ -170,6 +178,10 @@ class AST {
         return css;
     }
 
+    /**
+     * Transforme un arbre en css.
+     * @returns le css
+     */
     astToCSS() {
         let css = "";
 

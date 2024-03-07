@@ -23,7 +23,7 @@ function evaluate(exp, ast) {
             let unit = cssUnits.find(unit => exp.includes(unit));
             return eval(exp.replace(new RegExp(unit, 'g'), '')) + unit;
         } else {
-            console.log("dd"+error)
+            console.log(error)
             return "<Error>";
         }
     }
@@ -38,6 +38,7 @@ function evaluate(exp, ast) {
 function replaceVar(exp, ast) {
 
     let newExp = exp.replace(new RegExp('\\$([a-zA-Z0-9]*)'), (match, a1) => {
+
         let brk = true;
         let value = "<Error>";
 
