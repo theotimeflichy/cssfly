@@ -1,7 +1,11 @@
+const ASTImport = require('./modules/import');
+const ASTVar = require('./modules/variable');
+
 class AST {
 
-    constructor(content) {
+    constructor(content, path) {
         this.content = content;
+        this.path = path;
         this.ast = { type: 'root', var: [], child: [] };
         this.inBlock = [];
     }
@@ -11,10 +15,11 @@ class AST {
      * Permet de parser le cssfly en abs.
      * @param {String (css format)} data cssfly a parser
      */
-    parse() {
+    async parse() {
         this.inBlock.push(this.ast);
-        var data = this.strToArray(this.content);
-        //importFile(data);
+        var data = "";
+        data = await ASTImport.importFile(this.content, this.path)
+        data = this.strToArray(data);
         for (let line of data) this.analysis(line);
         return this.ast;
     }
@@ -43,31 +48,19 @@ class AST {
      * @param {*} line 
      */
     addRule(line) {
-        line = line.split(":", 2).map(l => l.trim());
+        line = line.split(":").map(l => l.trim());
+        for (let i = 2; i < line.length; i ++) line[1]+=line[i];
         line[1] = line[1].replace(/;$/, '');
 
-        // La value est elle un variable ? (local, global ?)
-        if (new RegExp(/^\$.*/).test(line[1])) {
-            let brk = true;
-            for (let i = this.inBlock.length; i >= 0 && brk; i--) {
-                if (this.inBlock[i]) {
-                    if (this.inBlock[i].var.some(e => e.name == line[1].replace(/\$/, ''))) {
-                        this.inBlock[i].var.map(o => {
-                            if (o.name == line[1].replace(/\$/, '')) {
-                                line[1] = o.value;
-                                brk=false;
-                            }
-                        });
-                    }
-                }
-            }
-        }
+        if (line[1].includes("$")) line[1] = ASTVar.evaluate(line[1], this.inBlock);
 
         // La regle existe t-elle déjà ? (add ou edit)
-        if (this.inBlock[this.inBlock.length-1].rules.some(e => e.name === line[0])){
-            this.inBlock[this.inBlock.length-1].rules.forEach(e => { if (e.property === line[0]) e.value = line[1]; });
-        } else {
-            this.inBlock[this.inBlock.length-1].rules.push({ type: "rule", property: line[0], value: line[1] });
+        if (this.inBlock[this.inBlock.length-1].rules) {
+            if (this.inBlock[this.inBlock.length-1].rules.some(e => e.name === line[0])){
+                this.inBlock[this.inBlock.length-1].rules.forEach(e => { if (e.property === line[0]) e.value = line[1]; });
+            } else {
+                this.inBlock[this.inBlock.length-1].rules.push({ type: "rule", property: line[0], value: line[1] });
+            }
         }
     }
 
@@ -76,16 +69,19 @@ class AST {
      * @param {*} line 
      */
     addVariable(line) {
+
+        // On récupère le nom et le contenu de la variable.
         line = line.substring(1).split("=", 2).map(l => l.trim());
-        line[1] = line[1].replace(/;$/, '');
-        if (this.inBlock[this.inBlock.length - 1].var.some(e => e.name === line[0])){
-            this.inBlock[this.inBlock.length - 1].var.forEach(e => { if (e.name === line[0]) e.value = line[1]; });
+        let var_name = line[0];
+        let var_expression = line[1].replace(/;$/, '');
+
+        // On ajoute la variable (ou update)
+        if (this.inBlock[this.inBlock.length - 1].var.some(e => e.name === var_name)){
+            this.inBlock[this.inBlock.length - 1].var.forEach(e => { if (e.name === var_name) e.value = var_expression; });
         } else {
-            this.inBlock[this.inBlock.length - 1].var.push({ type: "var", name: line[0], value: line[1] });
+            this.inBlock[this.inBlock.length - 1].var.push({ type: "var", name: var_name, value: var_expression });
         }
     }
-
-    // new RegExp('^@import\([\"\'].*(.css|.cssfly)[\"\']\);?$').test(line)
 
     /**
      * Permet de nettoyer le fichier css et de le passer en tableau.
@@ -126,13 +122,18 @@ class AST {
      * @returns 
      */
     createBlock(block, className) {
-        let css = this.generateClassName(block, className);
+        
+        let css = "";
 
-        block.rules.forEach(r => {
-            css += "\t" + r.property + ": " + r.value + ";\n";
-        });
+        if (block.rules.length > 0) {
+            css = this.generateClassName(block, className);
 
-        css += "}\n\n";
+            block.rules.forEach(r => {
+                css += "\t" + r.property + ": " + r.value + ";\n";
+            });
+
+            css += "}\n\n";
+        }
 
         return css;
     }
@@ -160,10 +161,8 @@ class AST {
                 });
 
             } else {
-                name = className + ((child.selector.trim().startsWith(":")) ? "" : " ") + child.selector;
+                name = className + ((new RegExp("^[:\[]").test(child.selector.trim())) ? "" : " ") + child.selector;
             }
-
-        
 
             css += this.toCSS(child, name);
         });

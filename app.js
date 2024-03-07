@@ -3,6 +3,7 @@ const AST = require('./src/abstractSyntaxTree.js');
 const axios = require('axios');
 
 async function main() {
+
         // On vérifie les arguments.
         const args = process.argv.slice(2);
         if (args.length != 2 || !(new RegExp('.*\.cssfly$').test(args[0])) || !(new RegExp('.*\.css$').test(args[1])))
