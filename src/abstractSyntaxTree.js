@@ -154,17 +154,20 @@ class AST {
      * @param {*} className 
      * @returns 
      */
-    createBlock(block, className) {
+    createBlock(block, className, tab) {
         
         let css = "";
 
         if (block.rules.length > 0) {
-            css = this.generateClassName(block, className);
+            if (tab) css += "\t";
+            css += this.generateClassName(block, className);
 
             block.rules.forEach(r => {
+                if (tab) css += "\t";
                 css += "\t" + r.property + ": " + r.value + ";\n";
             });
 
+            if (tab) css += "\t";
             css += "}\n\n";
         }
 
@@ -177,9 +180,9 @@ class AST {
      * @param {*} className 
      * @returns 
      */
-    toCSS (block, className) {
+    toCSS (block, className, tab) {
 
-        let css = this.createBlock(block, className);
+        let css = this.createBlock(block, className, tab);
 
         block.child.forEach(child => { 
 
@@ -197,7 +200,7 @@ class AST {
                 name = className + ((new RegExp("^[:\[]").test(child.selector.trim())) ? "" : " ") + child.selector;
             }
 
-            css += this.toCSS(child, name);
+            css += this.toCSS(child, name, false);
         });
 
         return css;
@@ -216,6 +219,18 @@ class AST {
         return comment;
     }
 
+    atToCSS(e) {
+        let css = "";
+
+        css += e.selector + " {\n";
+        e.child.map(i => {
+            css += this.toCSS(i, i.selector, true);
+        })
+        css += "}\n\n";
+
+        return css;
+    }
+ 
     /**
      * Transforme un arbre en css.
      * @returns le css
@@ -226,8 +241,10 @@ class AST {
         this.ast.child.forEach(e => { 
             if (e.type == "comment") {
                 css += this.commentToCSS(e);
+            } else if ((new RegExp("^(@keyframes|@media|@supports)")).test(e.selector)) {
+                css += this.atToCSS(e)
             } else if (e.type == "block") {
-                css += this.toCSS(e, e.selector);
+                css += this.toCSS(e, e.selector, false);
             }
         });
 
