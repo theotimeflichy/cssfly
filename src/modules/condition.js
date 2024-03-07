@@ -1,15 +1,22 @@
 const ASTVar = require('./variable');
-
-// 1 = open, 2 = close but was open, 3 close but never open
-const OPEN = 1;
+const OPEN = 1; 
 const WASOPEN = 2;
 const NEVEROPEN = 3;
 
+/**
+ * Permet de vérifier si une condition doit être évaluer,
+ * et si oui, de l'évaluer.
+ * @param {*} line la ligne de code contenant la condition.
+ * @param {*} ast image du système.
+ * @param {*} locker l'état de la condition.
+ * @returns 
+ */
 function verify(line, ast, locker) {
 
     // On extrait l'expression.
     let exp = line.match(new RegExp("@(if|else|endif|else if|elseif) *\((.*)\)"));
-    // On décide quoi faire.
+
+    // On décide de l'évaluation ou non de la condition.
     switch (exp[1]) {
         case 'if':
             locker = (test(exp[2], ast) == 1) ? OPEN : NEVEROPEN;
@@ -26,11 +33,15 @@ function verify(line, ast, locker) {
         case 'endif': locker = OPEN; break;
     }
 
-    console.log(exp[0] + " :: " + locker);
-
     return locker;
 }
 
+/**
+ * Permet de tester l'expression d'une condition
+ * @param {*} exp l'expression
+ * @param {*} ast l'image du système
+ * @returns true or false
+ */
 function test(exp, ast) {
     return (ASTVar.evaluate(exp, ast) == true) ? 1 : 0;
 }
