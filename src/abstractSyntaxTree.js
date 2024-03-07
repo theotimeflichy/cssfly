@@ -37,13 +37,6 @@ class AST {
         } else if (this.locker == 1) {
             if (line.startsWith("$") && line.includes("=")) {
                 this.addVariable(line);
-            } else if (line.includes("{")) {
-                this.inBlock.push({ type: "block", selector: line.replace(/{/, '').trim(), var: [], rules: [], child: [] });
-            } else if (line.includes("}")) {
-                this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
-                this.inBlock.pop();
-            } else if (line.includes(":")) {
-                this.addRule(line);
             } else if(line.startsWith("/*")) {
                 if (line.endsWith("*/")) {
                     this.inBlock.push({ type: "comment", long: false, value: line.slice(2).slice(0, -2).trim() })
@@ -52,11 +45,18 @@ class AST {
                 } else {
                     this.inBlock.push({ type: "comment", long:true, value: line.slice(2) })
                 }
-            } else if(line.endsWith("*/") && !line.startsWith("/*")) {
+            } else if(line.endsWith("*/") && !line.startsWith("/*") && this.inBlock[this.inBlock.length-1].type == "comment") {
                 this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
                 this.inBlock.pop();
-            } else if(line.includes("*")) {
+            } else if(line.includes("*") && this.inBlock[this.inBlock.length-1].type == "comment") {
                 this.inBlock[this.inBlock.length-1].value += " \n" + line.replace('*', '');
+            } else if (line.includes("{")) {
+                this.inBlock.push({ type: "block", selector: line.replace(/{/, '').trim(), var: [], rules: [], child: [] });
+            } else if (line.includes("}")) {
+                this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
+                this.inBlock.pop();
+            } else if (line.includes(":")) {
+                this.addRule(line);
             }
         }
 
