@@ -17,7 +17,13 @@ function evaluate(exp, ast) {
             // Si l'erreur est de type reference, cela veut dire que c'est un string.
             if (exp.startsWith('(') && exp.endsWith(')')) exp = exp.substring(1, exp.length - 1);
             return exp;
+        } else if (error instanceof SyntaxError) {
+            // Syntax erreur peut detecter un problème de gestion des unités.
+            let cssUnits = ['px', 'pt', 'in', 'cm', 'mm', 'em', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%', 'ex', 'ch', 'fr'];
+            let unit = cssUnits.find(unit => exp.includes(unit));
+            return eval(exp.replace(new RegExp(unit, 'g'), '')) + unit;
         } else {
+            console.log("dd"+error)
             return "<Error>";
         }
     }
