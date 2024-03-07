@@ -26,11 +26,11 @@ async function importFile(data, path) {
     
 async function importExternalFile(a1) {
     try {
-        const response = await axios.get(a1); // Attendre la réponse de axios
-        return response.data; // Retourner les données reçues
+        const response = await axios.get(a1);
+        return response.data;
     } catch (error) {
         console.error('Error:', error);
-        return null; // Retourner null ou gérer autrement en cas d'erreur
+        return null;
     }
 }
 
