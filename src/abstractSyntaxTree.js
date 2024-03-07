@@ -1,6 +1,7 @@
 const ASTImport = require('./modules/import');
 const ASTVar = require('./modules/variable');
 const ASTCondition = require('./modules/condition');
+const ASTArray = require('./modules/array');
 
 class AST {
 
@@ -93,12 +94,21 @@ class AST {
         line = line.substring(1).split("=", 2).map(l => l.trim());
         let var_name = line[0];
         let var_expression = line[1].replace(/;$/, '');
+        let type = "var";
+
+        if (line[1].startsWith("[") && line[1].endsWith("];")) {
+            let r = ASTArray.toArray(line, this.inBlock);
+            var_expression = r["values"];
+            type = r["type"];
+        } else {
+            var_expression = ASTVar.evaluate(var_expression, this.inBlock);
+        }
 
         // On ajoute la variable (ou update)
         if (this.inBlock[this.inBlock.length - 1].var.some(e => e.name === var_name)){
             this.inBlock[this.inBlock.length - 1].var.forEach(e => { if (e.name === var_name) e.value = var_expression; });
         } else {
-            this.inBlock[this.inBlock.length - 1].var.push({ type: "var", name: var_name, value: var_expression });
+            this.inBlock[this.inBlock.length - 1].var.push({ type: type, name: var_name, value: var_expression });
         }
     }
 

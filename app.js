@@ -14,7 +14,7 @@ async function main() {
         const a = new AST(data, args[0]);
         await a.parse();
         io.writeFileContent(args[1], a.astToCSS());
-        //io.writeFileContent(args[1], JSON.stringify(a.ast, null, 2));
+        io.writeFileContent(args[1], JSON.stringify(a.ast, null, 2));
 }
 
 
