@@ -32,7 +32,6 @@ class AST {
      */
     analysis(line) {
 
-
         if ((new RegExp("@(if|else|endif)")).test(line)) {
             this.locker = ASTCondition.verify(line, this.inBlock, this.locker);
         } else if (this.locker == 1) {
@@ -45,6 +44,19 @@ class AST {
                 this.inBlock.pop();
             } else if (line.includes(":")) {
                 this.addRule(line);
+            } else if(line.startsWith("/*")) {
+                if (line.endsWith("*/")) {
+                    this.inBlock.push({ type: "comment", long: false, value: line.slice(2).slice(0, -2).trim() })
+                    this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
+                    this.inBlock.pop();
+                } else {
+                    this.inBlock.push({ type: "comment", long:true, value: line.slice(2) })
+                }
+            } else if(line.endsWith("*/") && !line.startsWith("/*")) {
+                this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
+                this.inBlock.pop();
+            } else if(line.includes("*")) {
+                this.inBlock[this.inBlock.length-1].value += " \n" + line.replace('*', '');
             }
         }
 
@@ -181,6 +193,19 @@ class AST {
         return css;
     }
 
+    commentToCSS(e) {
+        let comment = "";
+
+        if (e.long) {
+            comment = e.value.trim().replace(/^\*+/, '').replace(/\r?\n/g, '\n \ *').trim();
+            comment = "/** \n \ " + comment + "\n \ */\n";
+        } else {
+            comment = "/* " + e.value + " */\n";
+        }
+
+        return comment;
+    }
+
     /**
      * Transforme un arbre en css.
      * @returns le css
@@ -189,7 +214,11 @@ class AST {
         let css = "";
 
         this.ast.child.forEach(e => { 
-            css += this.toCSS(e, e.selector);
+            if (e.type == "comment") {
+                css += this.commentToCSS(e);
+            } else if (e.type == "block") {
+                css += this.toCSS(e, e.selector);
+            }
         });
 
         return css;
