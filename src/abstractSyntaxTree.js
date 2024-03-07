@@ -32,17 +32,20 @@ class AST {
      */
     analysis(line) {
 
+
         if ((new RegExp("@(if|else|endif)")).test(line)) {
             this.locker = ASTCondition.verify(line, this.inBlock, this.locker);
-        } else if (this.locker == 1 && line.startsWith("$") && line.includes("=")) {
-            this.addVariable(line);
-        } else if (this.locker == 1 && line.includes("{")) {
-            this.inBlock.push({ type: "block", selector: line.replace(/{/, '').trim(), var: [], rules: [], child: [] });
-        } else if (this.locker == 1 && line.includes("}")) {
-            this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
-            this.inBlock.pop();
-        } else if (this.locker == 1 && line.includes(":")) {
-            this.addRule(line);
+        } else if (this.locker == 1) {
+            if (line.startsWith("$") && line.includes("=")) {
+                this.addVariable(line);
+            } else if (line.includes("{")) {
+                this.inBlock.push({ type: "block", selector: line.replace(/{/, '').trim(), var: [], rules: [], child: [] });
+            } else if (line.includes("}")) {
+                this.inBlock[this.inBlock.length-2].child.push(this.inBlock[this.inBlock.length-1]);
+                this.inBlock.pop();
+            } else if (line.includes(":")) {
+                this.addRule(line);
+            }
         }
 
     }

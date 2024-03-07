@@ -14,21 +14,24 @@ const NEVEROPEN = 3;
 function verify(line, ast, locker) {
 
     // On extrait l'expression.
-    let exp = line.match(new RegExp("@(if|else|endif|else if|elseif) *\((.*)\)"));
+    let exp = line.match(new RegExp("@(else if|elseif|if|else|endif) *\((.*)\)"));
 
     // On décide de l'évaluation ou non de la condition.
     switch (exp[1]) {
+        case 'elseif':
+        case 'else if': 
+            if (locker == OPEN) {
+                locker = WASOPEN;
+            } else if (locker == NEVEROPEN) { 
+                locker = (test(exp[2], ast) == 1) ? OPEN : NEVEROPEN;
+            }
+            break;
         case 'if':
             locker = (test(exp[2], ast) == 1) ? OPEN : NEVEROPEN;
             break;
         case 'else': 
             if (locker == NEVEROPEN) locker = OPEN;
             else if (locker == OPEN) locker = WASOPEN;
-            break;
-        case 'elseif':
-        case 'else if': 
-            if (locker == OPEN) locker = WASOPEN;
-            else if (locker == NEVEROPEN) (test(exp[2], ast) == 1) ? OPEN : NEVEROPEN;
             break;
         case 'endif': locker = OPEN; break;
     }
