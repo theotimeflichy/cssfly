@@ -24,7 +24,7 @@ function evaluate(exp, ast) {
             return eval(exp.replace(new RegExp(unit, 'g'), '')) + unit;
         } else {
             console.log(error)
-            return "<Error>";
+            return exp;
         }
     }
 }
@@ -37,14 +37,10 @@ function evaluate(exp, ast) {
  */
 function replaceVar(exp, ast) {
 
-    let newExp = "";
-    
-    try {
-        newExp = exp.replace(new RegExp('\\$([a-zA-Z0-9]*)'), (match, a1) => {
+    let newExp = exp.replace(new RegExp('\\$([a-zA-Z0-9]*)'), (match, a1) => {
 
-<<<<<<< Updated upstream
         let brk = true;
-        let value = "<Error>";
+        let value = "$" + a1;
 
         for (let i = ast.length; i >= 0 && brk; i--) {
             if (ast[i]) {
@@ -56,34 +52,46 @@ function replaceVar(exp, ast) {
                             value = "(" + o.value + ")";
                         }
                     });
-=======
-            let brk = true;
-            let value = "$" + a1;
-    
-            for (let i = ast.length; i >= 0 && brk; i--) {
-                if (ast[i]) {
-                    a1 = a1.replace(/\$/, '');
-                    if (ast[i].var && ast[i].var.some(e => e.name == a1)) {
-                        ast[i].var.map(o => {
-                            if (o.name == a1) {
-                                brk = false;
-                                value = "(" + o.value + ")";
-                            }
-                        });
-                    }
->>>>>>> Stashed changes
                 }
             }
-    
-            return value;
-        });
-    } catch (error) {
-        return exp;
-    }
+        }
+
+        return value;
+    });
 
     if (newExp === exp) return newExp;
 
     return replaceVar(newExp, ast);
 }
 
-module.exports = {evaluate};
+
+/**
+ * Permet d'obtenir la valeur d'une variable.
+ * @param {*} exp expression à remplacer.
+ * @param {*} ast image du systeme à ce moment.
+ * @returns l'expression avec leur variables remplacé.
+ */
+function getValue(exp, ast) {
+
+        let brk = true;
+        let value = "$" + exp;
+        let a1 = exp;
+
+        for (let i = ast.length; i >= 0 && brk; i--) {
+            if (ast[i]) {
+                a1 = a1.replace(/\$/, '');
+                if (ast[i].var.some(e => e.name == a1)) {
+                    ast[i].var.map(o => {
+                        if (o.name == a1) {
+                            brk = false;
+                            value = o.value;
+                        }
+                    });
+                }
+            }
+        }
+
+    return value;
+}
+
+module.exports = {replaceVar, evaluate, getValue};

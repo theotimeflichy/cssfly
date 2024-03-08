@@ -36,9 +36,6 @@ class AST {
         if ((new RegExp("@(if|else|endif)")).test(line)) {
             this.locker = ASTCondition.verify(line, this.inBlock, this.locker);
         } else if (this.locker == 1) {
-<<<<<<< Updated upstream
-            if (line.startsWith("$") && line.includes("=")) {
-=======
             
             if (this.comment == true){
                 this.inBlock[this.inBlock.length-1].value += " \n" + line.replace('*', '');
@@ -52,7 +49,6 @@ class AST {
                 this.inBlock.pop();
 
             } else if (line.startsWith("$") && line.includes("=")) {
->>>>>>> Stashed changes
                 this.addVariable(line);
             } else if(line.startsWith("/*")) {
                 if (line.endsWith("*/")) {

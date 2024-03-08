@@ -21,9 +21,6 @@ function toArray(line, ast) {
     return {values, type};
 }
 
-<<<<<<< Updated upstream
-module.exports = {toArray}
-=======
 function createEach(line) {
 
     let exp = line.match(new RegExp("@each (.*) in \\$(.*)"));
@@ -64,4 +61,3 @@ function createEachBlock(block, ast) {
 
 
 module.exports = { toArray, createEach, createEachBlock }
->>>>>>> Stashed changes
