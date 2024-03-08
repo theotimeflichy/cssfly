@@ -36,7 +36,23 @@ class AST {
         if ((new RegExp("@(if|else|endif)")).test(line)) {
             this.locker = ASTCondition.verify(line, this.inBlock, this.locker);
         } else if (this.locker == 1) {
+<<<<<<< Updated upstream
             if (line.startsWith("$") && line.includes("=")) {
+=======
+            
+            if (this.comment == true){
+                this.inBlock[this.inBlock.length-1].value += " \n" + line.replace('*', '');
+            
+            } else if (line.startsWith("@each")) {
+                var each = ASTArray.createEach(line);
+                this.inBlock.push({ type: "each", args: each.args, array: ASTVar.getValue(each.array, this.inBlock), child: [], var: [] });
+            } else if (line.startsWith("@endeach")) {
+                let eachBlock = ASTArray.createEachBlock(this.inBlock[this.inBlock.length-1], this.inBlock)
+                this.inBlock[this.inBlock.length-2].child.push(eachBlock);
+                this.inBlock.pop();
+
+            } else if (line.startsWith("$") && line.includes("=")) {
+>>>>>>> Stashed changes
                 this.addVariable(line);
             } else if(line.startsWith("/*")) {
                 if (line.endsWith("*/")) {

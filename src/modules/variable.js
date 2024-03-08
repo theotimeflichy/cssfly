@@ -37,8 +37,12 @@ function evaluate(exp, ast) {
  */
 function replaceVar(exp, ast) {
 
-    let newExp = exp.replace(new RegExp('\\$([a-zA-Z0-9]*)'), (match, a1) => {
+    let newExp = "";
+    
+    try {
+        newExp = exp.replace(new RegExp('\\$([a-zA-Z0-9]*)'), (match, a1) => {
 
+<<<<<<< Updated upstream
         let brk = true;
         let value = "<Error>";
 
@@ -52,12 +56,30 @@ function replaceVar(exp, ast) {
                             value = "(" + o.value + ")";
                         }
                     });
+=======
+            let brk = true;
+            let value = "$" + a1;
+    
+            for (let i = ast.length; i >= 0 && brk; i--) {
+                if (ast[i]) {
+                    a1 = a1.replace(/\$/, '');
+                    if (ast[i].var && ast[i].var.some(e => e.name == a1)) {
+                        ast[i].var.map(o => {
+                            if (o.name == a1) {
+                                brk = false;
+                                value = "(" + o.value + ")";
+                            }
+                        });
+                    }
+>>>>>>> Stashed changes
                 }
             }
-        }
-
-        return value;
-    });
+    
+            return value;
+        });
+    } catch (error) {
+        return exp;
+    }
 
     if (newExp === exp) return newExp;
 
