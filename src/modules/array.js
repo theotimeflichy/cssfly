@@ -47,7 +47,7 @@ function createEachBlock(block, ast) {
                 }), 
                 var: [], 
                 rules: child.rules.map((e) => { return {value: ASTVar.evaluate(e.value, bAST), property: e.property}; }),
-                child: [] 
+                child: evalChild(child.child, bAST, block)
             }
 
             newBlock.child.push(b);
@@ -58,6 +58,29 @@ function createEachBlock(block, ast) {
 
     return newBlock;
 } 
+
+function evalChild(child, bAST, block) {
+
+    if (!child) return [];
+
+    let tab = [];
+
+    child.forEach(e => {
+        let b = { 
+            type: "block", 
+            selector: e.selector.replace(new RegExp("\\$([a-zA-Z0-9]*)", "g"), r => {
+                return tab[block.args.indexOf(r)];
+            }), 
+            var: [], 
+            rules: e.rules.map((e) => { return {value: ASTVar.evaluate(e.value, bAST), property: e.property}; }),
+            child: evalChild(child.child, bAST)
+        }
+
+        tab.push(b);
+    });
+
+    return tab;
+}
 
 
 module.exports = { toArray, createEach, createEachBlock }
