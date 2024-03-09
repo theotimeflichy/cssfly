@@ -1,0 +1,29 @@
+$general = 1;
+
+.a {
+
+    color:$general;
+
+    $general = 2;
+
+    border-color:$general;
+
+    .b {
+
+        color:$general;
+
+        $general = 3;
+        .c {
+            $general = 4;
+            color:$general;
+        }
+        
+        border-color:$general;
+
+    }
+
+}
+
+.d {
+    color:$general;
+}

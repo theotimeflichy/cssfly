@@ -1,0 +1,7 @@
+$array = [(day, blue), (night, black), (evening, ping)];
+
+@each $name, $color in $array 
+    .time-$name {
+        color: $color;
+    }
+@endeach

@@ -1,0 +1,13 @@
+/* Un commentaire inutile */
+.container {
+    color:red;
+}
+
+/**
+  * Un long commentaire
+  * Mais tout aussi
+  * Inutile !
+  *
+  *
+  * Bien évidemment !
+  */

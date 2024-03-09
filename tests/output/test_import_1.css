@@ -1,0 +1,42 @@
+a {
+	color: red;
+}
+
+a b {
+	color: red;
+}
+
+a b c {
+	color: red;
+}
+
+a b c d e f g h {
+	color: red;
+	margin: 10px;
+	font-size: 200;
+}
+
+a b c d e f g h i {
+	color: red;
+}
+
+a b c d e f g h i j {
+	color: red;
+}
+
+a b c d {
+	color: green;
+}
+
+a b c d:hover {
+	color: red;
+}
+
+a b c d:hover e {
+	color: red;
+}
+
+a b c d:hover e f {
+	color: red;
+}
+

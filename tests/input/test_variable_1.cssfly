@@ -1,0 +1,6 @@
+$a = 10px;
+$b = 10px;
+
+.container {
+    padding: $a * $b;
+}

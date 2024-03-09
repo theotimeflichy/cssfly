@@ -1,0 +1,42 @@
+a {
+    b {
+        c {
+            d {
+                e {
+                    f {
+                        g {
+                            h {
+                                i {
+                                    j {
+                                        color:red;
+                                    }
+                                    color:red;
+                                }
+                                color:red;
+                                margin:10px;
+                                font-size:200;
+                            }
+                        }
+                    }
+                }
+            }
+
+            d {
+                color: green;
+            }
+
+            d:hover {
+                e {
+                    f {
+                        color: red;
+                    }
+                    color: red;
+                }
+                color:red;
+            }
+            color:red;
+        }
+        color:red;
+    }
+    color:red;
+}
