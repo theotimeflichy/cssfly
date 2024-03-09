@@ -1,8 +1,17 @@
 import unittest
 import subprocess
 import filecmp
+import os
 
 class Test(unittest.TestCase):
+
+    def setUp(self):
+        if os.path.exists('.\\test.css'):
+            os.remove('.\\test.css')
+
+    def tearDown(self):
+        if os.path.exists('.\\test.css'):
+            os.remove('.\\test.css')
     
     def test_nested_1(self):
 
