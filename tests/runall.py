@@ -1,6 +1,5 @@
 import unittest
 import subprocess
-import filecmp
 import os
 
 class Test(unittest.TestCase):
