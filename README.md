@@ -39,13 +39,15 @@ $size = $a * $b
 ### Conditions
 
 ```scss
-@if (1 == 1) h2 {
+@if (1 == 1)
+h2 {
   color: red;
 }
 @elseif (false)
 h2 {
   color: green;
-} @else h2 {
+} @else
+h2 {
   color: black;
 }
 @endif;
