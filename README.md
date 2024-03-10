@@ -58,7 +58,7 @@ h2 {
 h2 {
   color: black;
 }
-@endif;
+@endif
 ```
 
 ### Tableau & foreach
