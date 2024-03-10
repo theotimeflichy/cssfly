@@ -25,14 +25,21 @@ node ./app.js input.cssfly output.css
 ```
 
 ### Variables
+Il est possible d'utiliser des variables globales et locales. Redefinition possible.
 
 ```scss
 $a = 10px;
 $b = 100px;
-$size = $a * $b
+$size = $a * $b;
+$size = $a + $b;
 
 .container {
     height: $size;
+}
+
+.container-fluid {
+  $size = 5px;
+  height: $size;
 }
 ```
 
