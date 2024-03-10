@@ -87,17 +87,6 @@ $pd-size = [1, 2, 5, 18, 14];
 @endeach
 ```
 
-### Commentaires
-
-```scss
-/* Un commentaire simple */
-/**
-  * Un long commentaire
-  * sur plusieurs
-  * lignes !
-  */
-```
-
 ### Imports
 
 Il est possible d'importer des fichier externes et internes (chemin débute à la racine de cssfly).
