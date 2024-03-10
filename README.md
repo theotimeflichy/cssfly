@@ -39,11 +39,11 @@ $size = $a * $b
 ### Conditions
 
 ```scss
-@if (1 == 1)
+@if(1 == 1)
 h2 {
   color: red;
 }
-@elseif (false)
+@elseif(false)
 h2 {
   color: green;
 }
@@ -96,7 +96,7 @@ $pd-size = [1, 2, 5, 18, 14];
 Il est possible d'importer des fichier externes et internes (chemin débute à la racine de cssfly).
 
 ```scss
-@import ("https://google.com/style.css");
-@import ("style.css");
-@import ("style.cssfly");
+@import("https://google.com/style.css");
+@import("style.css");
+@import("style.cssfly");
 ```
