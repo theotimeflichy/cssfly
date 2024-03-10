@@ -46,7 +46,8 @@ h2 {
 @elseif (false)
 h2 {
   color: green;
-} @else
+}
+@else
 h2 {
   color: black;
 }
