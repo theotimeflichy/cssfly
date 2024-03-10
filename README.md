@@ -89,7 +89,7 @@ $pd-size = [1, 2, 5, 18, 14];
 
 ### Imports
 
-Il est possible d'importer des fichier externes et internes (chemin débute à la racine de cssfly).
+Il est possible d'importer des fichiers externes et internes (chemin débute à la racine de cssfly).
 
 ```scss
 @import("https://google.com/style.css");
